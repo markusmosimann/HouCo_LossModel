@@ -1,0 +1,61 @@
+# R-Script Vulnerability of household contents =========================================================================
+# Date:       05.02.2018
+# Author:     Markus Mosimann, markus.mosimann@giub.unibe.ch
+# Data model: Same for contents and structure (loss on contents + loss on structure = building loss)
+#             Variables:
+#               ID [INT]: 
+#                 > Number or expression to link content data with structure. The data of contents and structure
+#                   must be ordered to this number!
+#               Date [Date, format YYYY-MM-DD]:
+#                 > Date of the flood event, e.g. 2005-08-22
+#               Region [Factor]:
+#                 > Factor which levels define different regions (non-random cross-validation)
+#               Value [INT, > 0]:
+#                 > Monetary value of assets
+#               s_tot [INT, > 0]:
+#                 > Damage, including sum paid out by insurance AND excess. Same unit as "value"
+#               DoL [Double, > 0 (and < 1)]:
+#                 > Degree of loss (ratio of s_tot on value). DoL gets higher than 1, as soon as clean up work is
+#                   included within the loss
+#
+#=======================================================================================================================
+# 1. Set-up ====================================================================================================
+# Inherit scientific notification of numbers
+options("scipen"=100)
+
+# Tabelle mit wichtigsten Werten:
+paramTable <- as.data.frame(array(data = NA, dim = c(2, 12)))
+colnames(paramTable) <- c("Model", "Sp.rho / K.tau", "lambda CI", "lambda Est", "Sigma", "Beta_0", "Beta_0_CI", 
+                          "Beta_1", "Beta_1_CI", "R2", "SW_p-value", "BP_p-value")
+paramTable$Model <- c("DoL", "Loss")
+
+# Define & set path:
+path <- "U:/UniBE/UP16/ToPublish"; setwd(path)
+
+# load data
+load("Data/Loss_Data.RData")
+
+# Load model functions
+source("Functions/f_proflik_BoxCox_bothsides.R")
+
+
+# 2. Data distribution =================================================================================================
+# Define the regionnames with enough Data to produce meaningful boxplots:
+RegionsToPlot  <- levels(as.factor(c("OW", "TI", "UR", "SZ", "VS")))
+sapply(RegionsToPlot, FUN = function(Reg){
+  ind <- which(Contents$Region==Reg)
+  print(paste(Reg, "Fraction of Content loss to total loss:", round(sum(Contents$Loss[ind]) /
+                                                                      sum(Contents$Loss[ind] + Structure$Loss[ind]),4)))
+  print(paste(Reg, "Mean Fraction:", round(mean(Contents$Loss[ind]/(Contents$Loss[ind] + Structure$Loss[ind])), 4)))
+  print(paste(Reg, "Median Fraction:", round(median(Contents$Loss[ind]/(Contents$Loss[ind] + Structure$Loss[ind])), 4)))
+})
+
+sapply(RegionsToPlot, FUN = function(Reg){
+  ind <- which(Contents$Region==Reg)
+  print(paste(Reg, "Mean ratio of Content:Structure vulnerability:", round(mean(Contents$DoL[ind]/Structure$DoL[ind]), 4)))
+  print(paste(Reg, "Median ratio of Content:Structure vulnerability:", round(median(Contents$DoL[ind]/Structure$DoL[ind]), 4)))
+})
+
+
+    
+    
