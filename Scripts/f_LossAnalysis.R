@@ -44,7 +44,7 @@ PTBS.profllkhd.lambda <- function( lambda, y, x, intercept = TRUE, dummy.zeros =
 	x.lambda <- if(dummy.zeros) apply( x.to.transf, 1:2, function(x.ij){ ifelse( x.ij == 0, x.ij, BC.transform( lambda.x, x.ij ) ) } ) else BC.transform( lambda.x, x.to.transf )
 	X.lambda <- if( is.logical(intercept) & intercept[1] ) cbind( 1, x.lambda ) else if( is.logical(intercept) & !intercept[1] ) x.lambda else cbind( x[,intercept,drop=F], x.lambda )
 
-	beta.lambda <- solve( crossprod(X.lambda) ) %*% t(X.lambda) %*% y.lambda
+	beta.lambda <- solve( crossprod(X.lambda) ,tol = 1e-25) %*% t(X.lambda) %*% y.lambda
 	
 	res.lambda <- c( y.lambda - X.lambda %*% beta.lambda )
 	sigma2.lambda <- sum(res.lambda^2)/n
@@ -121,7 +121,7 @@ PTBS.mle <- function( y, x, lambda = NULL, sep.lam = FALSE, interval = c(-3,3), 
 	x.lambda <- if(dummy.zeros) apply( x.to.transf, 1:2, function(x.ij){ ifelse( x.ij == 0, x.ij, BC.transform( lambda.x, x.ij ) ) } ) else BC.transform( lambda.x, x.to.transf )
 	X.lambda <- if( is.logical(intercept) & intercept[1] ) cbind( 1, x.lambda ) else if( is.logical(intercept) & !intercept[1] ) x.lambda else cbind( x[,intercept,drop=F], x.lambda )			
 
-	beta.lambda <- c( solve( crossprod(X.lambda) ) %*% t(X.lambda) %*% y.lambda )
+	beta.lambda <- c( solve( crossprod(X.lambda),  tol = 1e-25) %*% t(X.lambda) %*% y.lambda )
 	
 	res.lambda <- c( y.lambda - X.lambda %*% beta.lambda )
 	sigma2.lambda <- sum(res.lambda^2)/n  # MLE (biased)
@@ -281,7 +281,7 @@ T.skew <- function( lambda, x, y, intercept = TRUE, robust = TRUE ) {  # ! not s
 
 	X.lambda <- if(intercept) cbind( 1, x.lambda ) else x.lambda
 
-	H.lambda <- X.lambda %*% solve( crossprod(X.lambda) ) %*% t(X.lambda)
+	H.lambda <- X.lambda %*% solve( crossprod(X.lambda), tol = 1e-25 ) %*% t(X.lambda)
 	
 	res.lambda <- c( ( diag(n) - H.lambda ) %*% y.lambda )
 
@@ -308,7 +308,7 @@ H.hesk <- function( lambda, x, y, intercept = TRUE, robust = TRUE ) {
 
 	X.lambda <- if(intercept) cbind( 1, x.lambda ) else x.lambda
 	
-	H.lambda <- X.lambda %*% solve( crossprod(X.lambda) ) %*% t(X.lambda)
+	H.lambda <- X.lambda %*% solve( crossprod(X.lambda), tol = 1e-25 ) %*% t(X.lambda)
 	
 	res.lambda <- c( ( diag(n) - H.lambda ) %*% y.lambda )
 
@@ -378,7 +378,7 @@ PTBS.profllkhd.knot.lambda <- function( lambda, y, x, knot.x, intercept = TRUE )
 	x.lambda <- BC.transform( lambda, x )
 	X.lambda <- if( (knot.x > min(x.lambda)) & (knot.x < max(x.lambda)) ) cbind( ifelse( intercept, 1, NULL ), pmin( x.lambda, knot.x ), pmax( x.lambda - knot.x, 0 ) ) else cbind( ifelse( intercept, 1, NULL ), x.lambda )
 
-	beta.lambda <- solve( crossprod(X.lambda) ) %*% t(X.lambda) %*% y.lambda
+	beta.lambda <- solve( crossprod(X.lambda) ,tol = 1e-25 ) %*% t(X.lambda) %*% y.lambda
 	
 	res.lambda <- c( y.lambda - X.lambda %*% beta.lambda )
 	sigma2.lambda <- sum(res.lambda^2)/n
@@ -422,7 +422,7 @@ PTBS.knot.mle <- function( y, x, lambda = NULL, knot, interval = c(-3,3), interc
 	x.lambda <- BC.transform( lambda, x ) # !!! only works if x.lambda is a vector !!!
 	X.lambda <- if( (knot > min(x.lambda)) & (knot < max(x.lambda)) ) cbind( ifelse( intercept, 1, NULL ), pmin( x.lambda, knot ), pmax( x.lambda - knot, 0 ) ) else cbind( ifelse( intercept, 1, NULL ), x.lambda )
 
-	beta.lambda <- c( solve( crossprod(X.lambda) ) %*% t(X.lambda) %*% y.lambda )
+	beta.lambda <- c( solve( crossprod(X.lambda) ,tol = 1e-25 ) %*% t(X.lambda) %*% y.lambda )
 	
 	res.lambda <- c( y.lambda - X.lambda %*% beta.lambda )
 	sigma2.lambda <- sum(res.lambda^2)/n  # MLE (biased)
