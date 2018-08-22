@@ -19,6 +19,8 @@
 #                   included within the loss
 #
 #=======================================================================================================================
+library(lmtest)
+library(RColorBrewer)
 # 1. Set-up ====================================================================================================
 # Inherit scientific notification of numbers
 options("scipen"=100)
@@ -29,14 +31,11 @@ colnames(paramTable) <- c("Model", "Sp.rho / K.tau", "lambda CI", "lambda Est", 
                           "Beta_1", "Beta_1_CI", "R2", "SW_p-value", "BP_p-value")
 paramTable$Model <- c("DoL", "Loss")
 
-# Define & set path:
-path <- "U:/UniBE/UP16/ToPublish"; setwd(path)
-
 # load data
 load("Data/Loss_Data.RData")
 
 # Load model functions
-source("Functions/f_proflik_BoxCox_bothsides.R")
+source("Scripts//f_LossAnalysis.R")
 
 
 # 2. Data distribution =================================================================================================
@@ -55,6 +54,35 @@ sapply(RegionsToPlot, FUN = function(Reg){
   print(paste(Reg, "Mean ratio of Content:Structure vulnerability:", round(mean(Contents$DoL[ind]/Structure$DoL[ind]), 4)))
   print(paste(Reg, "Median ratio of Content:Structure vulnerability:", round(median(Contents$DoL[ind]/Structure$DoL[ind]), 4)))
 })
+
+# Data distribution figures: 
+source("Scripts/S_DataDist.R")
+
+
+# Relative loss model:
+source("Scripts/S_RelLossAnalysis.R")
+
+
+# absolute loss model loss model:
+source("Scripts/S_AbsLossAnalysis.R")
+
+# (Leave-one-out-) cross-validation:
+source("Scripts/S_CrossVal.R")
+
+
+
+# Overview plots
+  par( mfrow = c(1,2) )
+  plot( Structure$Loss, Contents$Loss, xlab = "Structure", ylab = "Contents", main = "Absolute loss, original scale" )
+  points( Structure$Loss[idx.highlever], Contents$Loss[idx.highlever], col = 'blue', pch = 19 )
+  points( Structure$Loss[idx.outl], Contents$Loss[idx.outl], col = 'red', pch = 19 )
+  
+  plot( Structure$DoL, Contents$DoL, xlab = "Structure", ylab = "Contents", main = "Relative loss, original scale" )
+  points( Structure$DoL[idx.highlever], Contents$DoL[idx.highlever], col = 'blue', pch = 19 )
+  points( Structure$DoL[idx.outl], Contents$DoL[idx.outl], col = 'red', pch = 19 )
+  
+
+
 
 
     
