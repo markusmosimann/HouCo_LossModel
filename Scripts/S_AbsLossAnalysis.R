@@ -5,7 +5,7 @@
   abline( 0, 1, lty = 4, col = 'grey' )
 
 ########################################################################################################################
-#==== Fit Box-Cox transformation =======================================================================================
+#==== Fit Box-Cox transformation ======================================================================================#
 ########################################################################################################################
 
 p <- 2 # (???)
@@ -17,6 +17,14 @@ p <- 2 # (???)
       x.Loss <- Structure$Loss
       
       modelname <- "Full"
+      
+    #==== 3: W/o outliers nor lev. pts ====#
+      idx.remove <- c(145,249) # based on complete data set
+      
+      y.Loss <- Contents$Loss[-idx.remove]
+      x.Loss <- Structure$Loss[-idx.remove]
+    
+      modelname <- "notOutLev"
     
     #==== 2: W/o outliers ====#  <--- suggested & used in paper.
       idx.outl <- 145
@@ -25,14 +33,6 @@ p <- 2 # (???)
       x.Loss <- Structure$Loss[-idx.outl]
       
       modelname <- "noOutl"
-      
-    #==== 3: W/o outliers nor lev. pts ====#
-      idx.remove <- c(145,249) # based on complete data set
-      
-      y.Loss <- Contents$Loss[-idx.remove]
-      x.Loss <- Structure$Loss[-idx.remove]
-    
-    modelname <- "notOutLev"
     
   #==== End ====#
   
@@ -522,14 +522,14 @@ fitted.mle.seq.Loss <- c( cbind( 1, xlam.seq.Loss ) %*% mle.Loss$beta.hat )
   
 # Sensitivity to removed data points
   # lambda transforming to a symmetric distribution (p.135 Carroll and Ruppert 1984a)
-  plot( seq(-2,2,0.02), sapply( seq(-2,2,0.02), T.skew, x = x.Loss, y = y.Loss, intercept = TRUE ), type = 'l', xlab = "lambda", ylab = "Skewness measure", main = "Absolute loss" )
+  plot( seq(-2,1,0.02), sapply( seq(-2,1,0.02), T.skew, x = x.Loss, y = y.Loss, intercept = TRUE ), type = 'l', xlab = "lambda", ylab = "Skewness measure", main = "Absolute loss" )
   abline( h = 0, col = 'red' )
-  uniroot( f = T.skew, interval = c(-2,2), x = x.Loss, y = y.Loss, intercept = TRUE )
+  uniroot( f = T.skew, interval = c(-1,1), x = x.Loss, y = y.Loss, intercept = TRUE )
   # robust: lambda_sk = 0.344, w/o outlier 0.339
 
-  plot( seq(-2,2,0.02), sapply( seq(-2,2,0.02), T.skew, x = x.Loss, y = y.Loss, intercept = TRUE, robust = FALSE ), type = 'l', xlab = "lambda", ylab = "Skewness measure", main = "Absolute loss" )
+  plot( seq(-2,1,0.02), sapply( seq(-2,1,0.02), T.skew, x = x.Loss, y = y.Loss, intercept = TRUE, robust = FALSE ), type = 'l', xlab = "lambda", ylab = "Skewness measure", main = "Absolute loss" )
   abline( h = 0, col = 'red' )
-  uniroot( f = T.skew, interval = c(-2,2), x = x.Loss, y = y.Loss, intercept = TRUE, robust = FALSE )
+  uniroot( f = T.skew, interval = c(-1,1), x = x.Loss, y = y.Loss, intercept = TRUE, robust = FALSE )
   # less robust: lambda_sk = 0.179
 
 # lambda transforming to a homoskedastic distribution (p.135 Carroll and Ruppert 1984a)

@@ -19,6 +19,14 @@ p <- 2 # (???)
       x.DoL <- Structure$DoL
       
       modelname <- "Full"
+      
+    #==== 3: W/o outliers nor lev. pts ====#
+      idx.remove <- c(145,249) # based on complete data set
+      
+      y.DoL <- Contents$DoL[-idx.remove]
+      x.DoL <- Structure$DoL[-idx.remove]
+    
+      modelname <- "notOutLev"
     
     #==== 2: W/o outliers ====#  <--- suggested & used in paper.
       idx.outl <- 145
@@ -28,14 +36,6 @@ p <- 2 # (???)
       
       modelname <- "noOutl"
       
-    #==== 3: W/o outliers nor lev. pts ====#
-      idx.remove <- c(145,249) # based on complete data set
-      
-      y.DoL <- Contents$DoL[-idx.remove]
-      x.DoL <- Structure$DoL[-idx.remove]
-    
-    modelname <- "notOutLev"
-    
   #==== End ====#
   
   n.obs <- length(y.DoL)
