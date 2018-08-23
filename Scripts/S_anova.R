@@ -125,7 +125,7 @@ RSS.both.seplam.DoL <- sum(canton.both.seplam.DoL$e^2)
 1 - pf( ( ( RSS.no.DoL - RSS.both.DoL )/(canton.both.DoL$p - canton.no.DoL$p) )/canton.both.DoL$s2, df1 = canton.both.DoL$p - canton.no.DoL$p, df2 = canton.both.DoL$n - canton.both.DoL$p )
 1 - pf( ( ( RSS.no.seplam.DoL - RSS.both.seplam.DoL )/(canton.both.seplam.DoL$p - canton.no.seplam.DoL$p) )/canton.both.seplam.DoL$s2, df1 = canton.both.seplam.DoL$p - canton.no.seplam.DoL$p, df2 = canton.both.seplam.DoL$n - canton.both.seplam.DoL$p )
 1 - pchisq( -2*( canton.no.other.DoL$ell - canton.both.other.DoL$ell ), df = ncol(X.canton.aov.DoL) - 2 )
-# just not signif.; seplam: not signif.; TBS: not signif.
+# just not signif. (0.057); seplam: not signif.; TBS: not signif.
 ##(b) both vs. intercept
 1 - pf( ( ( RSS.intcpt.DoL - RSS.both.DoL )/(canton.both.DoL$p - canton.intcpt.DoL$p) )/canton.both.DoL$s2, df1 = canton.both.DoL$p - canton.intcpt.DoL$p, df2 = canton.both.DoL$n - canton.both.DoL$p )
 1 - pf( ( ( RSS.intcpt.seplam.DoL - RSS.both.seplam.DoL )/(canton.both.seplam.DoL$p - canton.intcpt.seplam.DoL$p) )/canton.both.seplam.DoL$s2, df1 = canton.both.seplam.DoL$p - canton.intcpt.seplam.DoL$p, df2 = canton.both.seplam.DoL$n - canton.both.seplam.DoL$p )
@@ -398,20 +398,23 @@ SS.STP.m <- function( group.list, y.i.bar, n.i ) {
 
 mu.i.hat.srt <- sort(tapply( canton.no.DoL$e, region.aov, mean ))
 n.i.srt <- n.obs.aov.cant[order(tapply( canton.no.DoL$e, region.aov, mean ))]
+
+
+# Critical value:
+4 * my.lm( canton.no.DoL$e, Region.mat.aov )$s2 * qf( 0.95, df1 = 4, df2 = canton.intcpt.DoL$n - canton.intcpt.DoL$p )
+
 # cantons are different:
 SS.STP.m( 1:5, mu.i.hat.srt, n.i.srt ) # not all equal: yes!
 
 # Three groups: {OW,TI}, {SZ,UR}, {VS}
 SS.STP.m( list( 1, 2:3, 4:5 ), mu.i.hat.srt, n.i.srt ) # {VS},{UR,SZ},{TI,OW}: yes!
 
-SS.STP( list( c(1,3), c(2,4), 5 ), canton.no.DoL$e, region.aov ) # Yes
 
+# H0.mat <- rbind( c(1,0,-1,0,0), c(0,1,0,-1,0) )
 
-H0.mat <- rbind( c(1,0,-1,0,0), c(0,1,0,-1,0) )
+# sum(canton.no.DoL$e^2) - sum( ( canton.no.DoL$e - Region.mat.aov %*% ( tapply( canton.no.DoL$e, region.aov, mean ) - c( solve(crossprod(Region.mat.aov)) %*% t(H0.mat) %*% solve( H0.mat %*% solve(crossprod(Region.mat.aov)) %*% t(H0.mat) ) %*% H0.mat %*% tapply( canton.no.DoL$e, region.aov, mean ) ) ) )^2 ) # SS.mod.corr(H0) = SS.tot.corr - SS.err(H0) = SS.err(all equal) - SS.err(H_0: OW=TI,SZ=UR)
 
-sum(canton.no.DoL$e^2) - sum( ( canton.no.DoL$e - Region.mat.aov %*% ( tapply( canton.no.DoL$e, region.aov, mean ) - c( solve(crossprod(Region.mat.aov)) %*% t(H0.mat) %*% solve( H0.mat %*% solve(crossprod(Region.mat.aov)) %*% t(H0.mat) ) %*% H0.mat %*% tapply( canton.no.DoL$e, region.aov, mean ) ) ) )^2 ) # SS.mod.corr(H0) = SS.tot.corr - SS.err(H0) = SS.err(all equal) - SS.err(H_0: OW=TI,SZ=UR)
-
-t( H0.mat %*% tapply( canton.no.DoL$e, region.aov, mean ) ) %*% solve( H0.mat %*% solve(crossprod(Region.mat.aov)) %*% t(H0.mat) ) %*% H0.mat %*% tapply( canton.no.DoL$e, region.aov, mean )
+# t( H0.mat %*% tapply( canton.no.DoL$e, region.aov, mean ) ) %*% solve( H0.mat %*% solve(crossprod(Region.mat.aov)) %*% t(H0.mat) ) %*% H0.mat %*% tapply( canton.no.DoL$e, region.aov, mean )
 
 # {VS} is different from {SZ,UR}
 SS.STP.m( list( c(2,4), 5 ), mu.i.hat.srt, n.i.srt ) # No
@@ -429,7 +432,7 @@ SS.STP.m( list( c(1,3), c(2,4,5) ), mu.i.hat.srt, n.i.srt ) # Just not.
 SS.STP.m( list( c(1,3), c(2,4) ), mu.i.hat.srt, n.i.srt ) # No
 
 # Pairwise differences:
-combn( 5, 2, FUN = function(pair){ SS.STP( pair, canton.no.DoL$e, region.aov ) } ) # None significant
+combn( 5, 2, FUN = function(pair){ SS.STP.m( pair, mu.i.hat.srt, n.i.srt ) } ) # None significant
 
 # Again DoL for residuals:
 4 * my.lm( canton.no.DoL$e, Region.mat.aov )$s2 *(canton.intcpt.DoL$n - (canton.intcpt.DoL$p - 1))/(canton.intcpt.DoL$n - canton.intcpt.DoL$p) * qf( 0.95, df1 = 4, df2 = canton.intcpt.DoL$n - canton.intcpt.DoL$p ) # = 2.291624; Correction in s2 to account for the fact the the residuals have df = n-1.
@@ -476,7 +479,7 @@ mu.i.hat.srt <- sort(canton.intcpt.DoL$coefs[1:5])
 n.i.srt <- n.obs.aov.cant[order(canton.intcpt.DoL$coefs[1:5])]
 
 # Critical value
-crit <- 4 * canton.intcpt.DoL$s2 * qf( 0.95, df1 = 4, df2 = canton.intcpt.DoL$n - canton.intcpt.DoL$p ) # = 2.2911
+4 * canton.intcpt.DoL$s2 * qf( 0.95, df1 = 4, df2 = canton.intcpt.DoL$n - canton.intcpt.DoL$p ) # = 2.2911
 
 SS.STP.m( 1:5, mu.i.hat.srt, n.i.srt ) # not all equal: yes!
 SS.STP.m( list( 1, 5 ), mu.i.hat.srt, n.i.srt ) # VS-OW: no
@@ -528,12 +531,6 @@ anova( lm( canton.no.DoL$e ~ region.aov ) )
 
 cbind( pairdiff.mat %*% my.lm( canton.no.DoL$e, Region.mat.aov )$coefs, diffs.intcpt.DoL ) # differences for anova of residuals are very similar but weaker (except for UR-SZ and UR-TI)
 
-library(MASS)
-full.coef <- lm( y ~ x1 + x2 + x3 + x4, data = cement )$coef
-H0.mat <- rbind( c(0,1,0,0,0),c(0,0,1,0,0),c(0,0,0,1,0),c(0,0,0,0,1) ) # SS.mod.corr
-H0.mat <- rbind( c(0,0,0,0,1) ) # ,c(0,1,0,0,0),c(0,0,1,0,0),c(0,0,0,1,0),
-c( t( H0.mat %*% full.coef ) %*% solve( H0.mat %*% solve( crossprod( cbind( 1, as.matrix(cement)[,1:4] ) ) ) %*% t(H0.mat) ) %*% H0.mat %*% full.coef )
-
 ## Newman-Keuls for residuals
 # Sorted means:
 sort(tapply( canton.no.DoL$e, region.aov, mean ))
@@ -555,7 +552,7 @@ combn( 5, 2, function(pair){ diff( sort(tapply( canton.no.DoL$e, region.aov, mea
 1 - pchisq( ( sum(n.obs.aov.cant-1) * log( sum( (n.obs.aov.cant-1) * tapply( canton.no.DoL$e, region.aov, var ) )/sum(n.obs.aov.cant-1) ) - sum( (n.obs.aov.cant-1) * log(tapply( canton.no.DoL$e, region.aov, var )) ) )/( 1 + ( sum( 1/(n.obs.aov.cant-1) ) - 1/sum(n.obs.aov.cant-1) )/(3*4) ), df = 4 )
 # Variances not equal...
 
-# Check normality of samples:
+# Check normality of samples (because previous test is sensitive to lack of normality, in which case it might also reject the homogeneity of variances):
 plot( qnorm( (1:n.obs.aov.cant[1])/(n.obs.aov.cant[1] + 1) ), sort( ( canton.no.DoL$e[as.logical(Region.mat.aov[,1])] - mean(canton.no.DoL$e[as.logical(Region.mat.aov[,1])]) )/sd(canton.no.DoL$e[as.logical(Region.mat.aov[,1])]) ), ylab = "Observed standardized", xlab = "Theoretical N(0,1) quantiles" )
 abline( 0, 1, col = 'red' )
 plot( qnorm( (1:n.obs.aov.cant[2])/(n.obs.aov.cant[2] + 1) ), sort( ( canton.no.DoL$e[as.logical(Region.mat.aov[,2])] - mean(canton.no.DoL$e[as.logical(Region.mat.aov[,2])]) )/sd(canton.no.DoL$e[as.logical(Region.mat.aov[,2])]) ), ylab = "Observed standardized", xlab = "Theoretical N(0,1) quantiles" )
@@ -571,9 +568,10 @@ abline( 0, 1, col = 'red' )
 ## F_max test for equal variances
 library(SuppDists)
 1 - pmaxFratio( max(tapply( canton.no.DoL$e, region.aov, var ))/min(tapply( canton.no.DoL$e, region.aov, var )), df = 18, k = 5 ) # S&R suggest to use lesser df
-# Not significant (with larger df = 76 it would however, and with mean df 47 as well!
+# Not significant (with larger df = 76 it would however, and with mean df 47 as well)!
 
-## Box 13.2 (approximate test of equality of means when variances are heterogeneous)
+
+## Box 13.2 Sokal and Rohlf 1961 (approximate test of equality of means when variances are heterogeneous)
 w <- n.obs.aov.cant/tapply( canton.no.DoL$e, region.aov, var )
 CT.w <- sum( w * tapply( canton.no.DoL$e, region.aov, mean ) )^2/sum(w)
 1 - pf( ( (sum( w * tapply( canton.no.DoL$e, region.aov, mean )^2 ) - CT.w)/4 )/( 1 + (2*3)/(5^2-1) * sum( (1 - w/sum(w))^2/(n.obs.aov.cant-1) ) ), df1 = 4, df2 = (5^2-1)/(3*sum( (1 - w/sum(w))^2/(n.obs.aov.cant-1) )) ) # p-val = 0.0146 --> Reject equality of means
@@ -590,7 +588,7 @@ tapply( rank(canton.no.DoL$e), region.aov, sum )
 # Critical value:
 combn( 5, 2, function(pair){ diff( sort(tapply( rank(canton.no.DoL$e), region.aov, mean ))[pair] ) } ) > combn( 5, 2, function(pair){ 2.807 * sqrt( n.obs.aov * (n.obs.aov + 1)/12 * mean(1/n.obs.aov.cant[order(tapply( rank(canton.no.DoL$e), region.aov, mean ))][pair]) ) } )
 sort(tapply( rank(canton.no.DoL$e), region.aov, mean ))
-# VS-TI, VS-OW, and SZ-OW seem to be significant -- but no adjustment for multiple comparisons, thus not significant!!
+# VS-TI, VS-OW, and SZ-OW seem to be significant -- but no adjustment for multiple comparisons, thus actually they might not be significant!!
 library(dunn.test)
 dunn.test( canton.no.DoL$e, g = region.aov, altp = TRUE, method = "none" )
 dunn.test( canton.no.DoL$e, g = region.aov, altp = TRUE, method = "by"  ) # with any adjustment method, nothing is significant anymore...
@@ -871,108 +869,6 @@ cbind( estim = mle.canton.slope.other.Loss$beta.hat, se = se.canton.slope.other.
 cbind( estim = mle.canton.no.Loss$beta.hat, se = se.canton.no.Loss, pval = 2*( 1 - pnorm( abs(mle.canton.no.Loss$beta.hat/se.canton.no.Loss) ) ) )
 cbind( estim = mle.canton.no.seplam.Loss$beta.hat, se = se.canton.no.seplam.Loss, pval = 2*( 1 - pnorm( abs(mle.canton.no.seplam.Loss$beta.hat/se.canton.no.seplam.Loss) ) ) )
 cbind( estim = mle.canton.no.other.Loss$beta.hat, se = se.canton.no.other.Loss, pval = 2*( 1 - pnorm( abs(mle.canton.no.other.Loss$beta.hat/se.canton.no.other.Loss) ) ) )
-
-
-
-# Transformed scale (lambda fixed to fit of whole data set)
-y.lambda.aov.Loss <- BC.transform( mle.Loss$lambda.hat[1], Contents$Loss[-idx.omit] )
-x.lambda.aov.Loss <- BC.transform( mle.Loss$lambda.hat[1+sep.lam.global], Structure$Loss[-idx.omit] )
-
-#X.lambda.canton.Loss <- cbind( Region.mat, Region.mat * x.lambda.Loss )
-X.lambda.canton.aov.Loss <- cbind( Region.mat.aov, Region.mat.aov * x.lambda.aov.Loss )
-colnames(X.lambda.canton.aov.Loss)[6:10] <- paste( 'x.lam', colnames(X.lambda.canton.aov.Loss)[1:5], sep = ':' )
-
-
-## Take lambda as fixed:
-# Intercept and slope by canton
-canton.both.Loss <- my.lm( y.lambda.aov.Loss, X.lambda.canton.aov.Loss )
-# Only intercept by canton
-canton.intcpt.Loss <- my.lm( y.lambda.aov.Loss, cbind( Region.mat.aov, x.lam = x.lambda.aov.Loss ) )
-# Nothing by canton
-canton.no.Loss <- my.lm( y.lambda.aov.Loss, cbind( intcpt = 1, x.lam = x.lambda.aov.Loss ) )
-
-#°° TBS model (also lambda fixed)
-mle.canton.both.Loss <- TBS.mle( y = y.aov.Loss, x = X.canton.aov.Loss, lambda = mle.other.Loss$lambda.hat, beta.init = rep( c(1000,0.5), each = 5 ), interval = c(-3,1), intercept = FALSE )
-names( mle.canton.both.Loss$beta.hat ) <- colnames(X.canton.aov.Loss)
-# Only intercept by canton
-mle.canton.intcpt.Loss <- TBS.mle( y = y.aov.Loss, x = cbind( Region.mat.aov, x.aov.Loss ), lambda = mle.other.Loss$lambda.hat, beta.init = c(rep(1000,5),0.5), interval = c(-3,1), intercept = FALSE )
-names( mle.canton.intcpt.Loss$beta.hat ) <- c( colnames(Region.mat.aov), 'x' )
-# Nothing by canton
-mle.canton.no.Loss <- TBS.mle( y = y.aov.Loss, x = x.aov.Loss, lambda = mle.other.Loss$lambda.hat, beta.init = c(1000,0.5), interval = c(-3,1), intercept = TRUE )
-names( mle.canton.no.Loss$beta.hat ) <- c('one','x')
-#°°
-
-## Fit new TBS/PTBS model:
-# Intercept and slope by canton
-
-sep.lam.global <- TRUE
-
-# Intercept and slope by canton
-mle.canton.both.Loss <- PTBS.mle( y = y.aov.Loss, x = X.canton.aov.Loss, intercept = 1:5, dummy.zeros = TRUE, interval = c(-3,1), sep.lam = sep.lam.global )
-names( mle.canton.both.Loss$beta.hat ) <- colnames(X.canton.aov.Loss)
-# Only intercept by canton
-mle.canton.intcpt.Loss <- PTBS.mle( y = y.aov.Loss, x = cbind( Region.mat.aov, x.aov.Loss ), intercept = 1:5, interval = c(-3,1), sep.lam = sep.lam.global )
-names( mle.canton.intcpt.Loss$beta.hat ) <- c( colnames(Region.mat.aov), 'x' )
-# Nothing by canton
-mle.canton.no.Loss <- PTBS.mle( y = y.aov.Loss, x = x.aov.Loss, intercept = TRUE, interval = c(-3,1), sep.lam = sep.lam.global )
-names(mle.canton.no.Loss$beta.hat) <- c('one','x')
-
-#°° TBS model
-mle.canton.both.Loss <- TBS.mle( y = y.aov.Loss, x = X.canton.aov.Loss, beta.init = rep( c(1000,0.5), each = 5 ), interval = c(-3,1), intercept = FALSE )
-names( mle.canton.both.Loss$beta.hat ) <- colnames(X.canton.aov.Loss)
-# Only intercept by canton
-mle.canton.intcpt.Loss <- TBS.mle( y = y.aov.Loss, x = cbind( Region.mat.aov, x.aov.Loss ), beta.init = c(rep(1000,5),0.5), interval = c(-3,1), intercept = FALSE )
-names( mle.canton.intcpt.Loss$beta.hat ) <- c( colnames(Region.mat.aov), 'x' )
-# Nothing by canton
-mle.canton.no.Loss <- TBS.mle( y = y.aov.Loss, x = x.aov.Loss, beta.init = c(1000,0.5), interval = c(-3,1), intercept = TRUE )
-names(mle.canton.no.Loss$beta.hat) <- c('one','x')
-#°°
-
-# both vs. nothing
-1 - pchisq( -2*( mle.canton.no.Loss$ell - mle.canton.both.Loss$ell ), df = ncol(X.canton.aov.Loss) - 2 )
-# just signif.; seplam: not signif.; TBS: not signif.
-# both vs. intercept
-1 - pchisq( -2*( mle.canton.intcpt.Loss$ell - mle.canton.both.Loss$ell ), df = ncol(Region.mat.aov) - 1 )
-# not signif. (neither for seplam nor TBS)
-# intercept vs. nothing 
-1 - pchisq( -2*( mle.canton.no.Loss$ell - mle.canton.intcpt.Loss$ell ), df = ncol(Region.mat.aov) - 1 )
-# signif. (also for seplam); not signif. for TBS
-
-
-covML.canton.both.Loss <- solve( -optimHess( unlist(mle.canton.both.Loss[c(2,3,1)]), PTBS.llkhd, y = y.aov.Loss, x = X.canton.aov.Loss, intercept = 1:5, dummy.zeros = TRUE, sep.lam = sep.lam.global, control = list( maxit = 5000, fnscale = -1 ) ) )
-covML.canton.intcpt.Loss <- solve( -optimHess( unlist(mle.canton.intcpt.Loss[c(2,3,1)]), PTBS.llkhd, y = y.aov.Loss, x = cbind( Region.mat.aov, x.aov.Loss ), intercept = 1:5, sep.lam = sep.lam.global, control = list( maxit = 5000, fnscale = -1 ) ) )
-covML.canton.no.Loss <- solve( -optimHess( unlist(mle.canton.no.Loss[c(2,3,1)]), PTBS.llkhd, y = y.aov.Loss, x = x.aov.Loss, intercept = TRUE, sep.lam = sep.lam.global, control = list( maxit = 5000, fnscale = -1 ) ) )
-
-#°° TBS model
-covML.canton.both.Loss <- solve( -optimHess( unlist(mle.canton.both.Loss[c(2,3,1)]), loglik.other, y = y.aov.Loss, x = X.canton.aov.Loss, intercept = FALSE, control = list( fnscale = -1 ) ) )
-covML.canton.intcpt.Loss <- solve( -optimHess( unlist(mle.canton.intcpt.Loss[c(2,3,1)]), loglik.other, y = y.aov.Loss, x = cbind( Region.mat.aov, x.aov.Loss ), intercept = FALSE, control = list( fnscale = -1 ) ) )
-covML.canton.no.Loss <- solve( -optimHess( unlist(mle.canton.no.Loss[c(2,3,1)]), loglik.other, y = y.aov.Loss, x = x.aov.Loss, intercept = TRUE, control = list( fnscale = -1 ) ) )
-#°°
-
-se.canton.both.Loss <- sqrt( diag(covML.canton.both.Loss)[1:length(mle.canton.both.Loss$beta.hat)] )
-se.canton.intcpt.Loss <- sqrt( diag(covML.canton.intcpt.Loss)[1:length(mle.canton.intcpt.Loss$beta.hat)] )
-se.canton.no.Loss <- sqrt( diag(covML.canton.no.Loss)[1:p] )
-
-## Overview table of the individual model coefficients
-# both
-cbind( estim = mle.canton.both.Loss$beta.hat, se = se.canton.both.Loss, pval = 2*( 1 - pnorm( abs(mle.canton.both.Loss$beta.hat/se.canton.both.Loss) ) ) )
-# intercept
-cbind( estim = mle.canton.intcpt.Loss$beta.hat, se = se.canton.intcpt.Loss, pval = 2*( 1 - pnorm( abs(mle.canton.intcpt.Loss$beta.hat/se.canton.intcpt.Loss) ) ) )
-# nothing
-cbind( estim = mle.canton.no.Loss$beta.hat, se = se.canton.no.Loss, pval = 2*( 1 - pnorm( abs(mle.canton.no.Loss$beta.hat/se.canton.no.Loss) ) ) )
-
-
-### Only intercept:
-# Difference between coefficients
-diffs.intcpt.Loss <- pairdiff.mat %*% mle.canton.intcpt.Loss$beta.hat[1:5]
-se.diffs.intcpt.Loss <- sqrt( diag( pairdiff.mat %*% covML.canton.intcpt.Loss[1:5,1:5] %*% t(pairdiff.mat) ) )
-
-# Overview table
-cbind( estim = c(diffs.intcpt.Loss), se = se.diffs.intcpt.Loss, pval = 2*( 1 - pnorm( abs(c(diffs.intcpt.Loss))/se.diffs.intcpt.Loss ) ) )
-# VS-OW and VS-TI largest; UR-OW is also significant but only a bit more than half as large as the two others; SZ-OW is just not significant (and of similar value as UR-OW)
-# Same for seplam, but there, SZ-OW is further away from being significant.
-# TBS: UR-TI and VS-TI are significant and the largest two differences, but all differences are very small (abs <= 0.013). Thus there are two significant differences in the medians of y, but overall canton-specific intercepts do not seem appropriate by the LRT.
-# Moreover, not sure that considering differences of betas makes sense for this model!!
 
 
 
