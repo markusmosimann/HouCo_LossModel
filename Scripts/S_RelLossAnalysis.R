@@ -353,9 +353,9 @@ fitted.mle.seq.DoL <- c( cbind( 1, xlam.seq.DoL ) %*% mle.DoL$beta.hat )
            y = BC.transform( mle.DoL$lambda.hat[1], c( 0, 0, 1, 1, 1.5, 1.5 ) ), density = 5, angle = -45, 
            col = "lightgrey")
   # if appropriate:
-  # points( BC.transform( mle.DoL$lambda.hat[1+sep.lam.global], Structure$DoL[idx.outl] ), 
-  #         BC.transform( mle.DoL$lambda.hat[1], Contents$DoL[idx.outl] ), pch = 4 ) # ev. pch = 8
-  # points( BC.transform( mle.DoL$lambda.hat[1+sep.lam.global], Structure$DoL[idx.remove] ), 
+  points( BC.transform( mle.DoL$lambda.hat[1+sep.lam.global], Structure$DoL[idx.outl] ),
+          BC.transform( mle.DoL$lambda.hat[1], Contents$DoL[idx.outl] ), pch = 4 ) # ev. pch = 8
+  # points( BC.transform( mle.DoL$lambda.hat[1+sep.lam.global], Structure$DoL[idx.remove] ),
   #         BC.transform( mle.DoL$lambda.hat[1], Contents$DoL[idx.remove] ), pch = 4 )
   #
   abline( mle.DoL$beta.hat, col = 'red' )
@@ -546,6 +546,6 @@ fitted.mle.seq.DoL <- c( cbind( 1, xlam.seq.DoL ) %*% mle.DoL$beta.hat )
 
 
 # Adjusted R^2:
-  1 - ( sum(e.DoL^2)/(n.obs-p) )/( sum( ( y.lambda.DoL - mean(y.lambda.DoL) )^2 )/(n.obs-1) )
+  adj_R2.DoL <- 1 - ( sum(e.DoL^2)/(n.obs-p) )/( sum( ( y.lambda.DoL - mean(y.lambda.DoL) )^2 )/(n.obs-1) )
 
 

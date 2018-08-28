@@ -242,7 +242,9 @@ pbias.models.comb.transf <- function( x, mle, mle.seplam, mle.other, y, type ) {
         c( c( 1, x ) %*% ( s2.hat.other.Loss * solve( crossprod( diag( c( cbind( 1, x.Loss ) %*% mle.other.Loss$beta.hat )^(mle.other.Loss$lambda.hat - 1) ) %*% cbind( 1, x.Loss ) ) ) ) %*% c(1, x) ) } ) + s2.hat.other.Loss
 
     var.pred.transf.Loss <- cbind( TBS = var.pred.TBS.transf.Loss, PTBS = var.pred.PTBS.transf.Loss, PTBS.seplam = var.pred.PTBS.seplam.transf.Loss )
-
+    
+    ranking <- order(y.Loss)
+    
     par(mfrow=c(3,1))
     for(i in 1:3) {
     	boxplot( t( pbias.transf.fullCV.Loss[ranking,i] ), outlty = 1, outpch = NA, xlab = "Rank of target loss", 
@@ -313,7 +315,6 @@ pbias.models.comb.transf <- function( x, mle, mle.seplam, mle.other, y, type ) {
 
   # Individual biases for mean prediction (resamples do or don't contain obs j)
     # x11()
-    ranking <- order(y.Loss)
     par( mfcol = c(3, 2))
     for(i in 1:6) {
     	boxplot( 1:n.obs, (pred.fullCV.DoL[,i] - y.DoL * y.InSum)[ranking], outlty = 1, outpch = NA, xlab = "Rank of target value", 

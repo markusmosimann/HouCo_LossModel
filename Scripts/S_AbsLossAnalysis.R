@@ -540,7 +540,7 @@ fitted.mle.seq.Loss <- c( cbind( 1, xlam.seq.Loss ) %*% mle.Loss$beta.hat )
 
 
 # Adjusted R^2:
-  1 - ( sum(e.Loss^2)/(n.obs-p) )/( sum( ( y.lambda.Loss - mean(y.lambda.Loss) )^2 )/(n.obs-1) )
+  adj_R2.Loss <- 1 - ( sum(e.Loss^2)/(n.obs-p) )/( sum( ( y.lambda.Loss - mean(y.lambda.Loss) )^2 )/(n.obs-1) )
   
   
   
