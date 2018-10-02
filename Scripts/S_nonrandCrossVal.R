@@ -542,7 +542,6 @@ wght.pred.err.nrCV.allobs.Loss <- vapply( mapply( function(m.k, D.k){
 ##======= Summary =======##
 ##=======================##
 
-library(abind)
 se.bias.transfer <- apply( abind( pred.nrCV.Loss[,1:3,], pred.nrCV.DoL[,1:3,], pred.nrCV.Loss[,4:6,], 
                                   pred.nrCV.DoL[,4:6,], along = 2 ) - y.aov.Loss, 2:3, sd )
 
@@ -564,16 +563,18 @@ se.preds.transfer <- abind( se.rmspe = matrix( NA, 12, nb.K ), se.bias = se.bias
 # Summary plots for prediction on original scale:
 # A: 2 large sep, V: 2 better mix, X: 5, O: 10, []: 20
   x11(width = 12, height = 9)
-  par( mfrow = c(2,2), mar = c( 9, 4, 3.5, 4 ) )
+  par( mfrow = c(2,2), mar = c( 9, 4, 3.5, 4 ), cex=1.1 )
   for( i in c(2,4,5,7) ) {
   	plot( rep( 1:12, 5 ) + rep( c(-0.36,-0.18,0,0.18,0.36), each = 12 ), 
   	      c( rbind( Delta.nrCV.K.Loss[1:3,i,], Delta.nrCV.K.DoL[1:3,i,], Delta.nrCV.K.Loss[4:6,i,], Delta.nrCV.K.DoL[4:6,i,] ) ),
-  	      xlab = "", ylab = err.name[i], main = "Aggregate prediction error and variability", pch = rep( c(2,6,4,1,0), each = 12 ),
+  	      xlab = "", ylab = err.name[i], pch = rep( c(2,6,4,1,0), each = 12 ),
   	      xaxt = 'n', mgp = c(2.5,1,0), ylim = range( c( Delta.nrCV.K.Loss[1:3,i,], Delta.nrCV.K.DoL[1:3,i,], 
   	                                                     Delta.nrCV.K.Loss[4:6,i,], Delta.nrCV.K.DoL[4:6,i,]
   	                                                     # , Delta.AnrCV.K.Loss[1:3,i,], Delta.AnrCV.K.DoL[1:3,i,],
   	                                                     # Delta.AnrCV.K.Loss[4:6,i,], Delta.AnrCV.K.DoL[4:6,i,] 
   	                                                     ) ) )
+    if ( i==2 ) { title( main = "i)", line = 0.5) } else if (i==4) {title( main = "ii)", line = 0.5 )} else if (i==5){ 
+      title( main = "iii)", line = 0.5 ) } else { title( main = "iv)", line = 0.5 )}
     
   	# points( rep( 1:12, 5 ) + rep( c(-0.36,-0.18,0,0.18,0.36), each = 12 ), 
   	#         c( rbind( 
@@ -591,10 +592,15 @@ se.preds.transfer <- abind( se.rmspe = matrix( NA, 12, nb.K ), se.bias = se.bias
   		plot( rep( 1:12, each = 6 ) + rep( c(-0.36,-0.18,0,0.18,0.36,NA), 12 ), c( t(cbind(se.preds.transfer[,,i],NA)) ),
   		      axes = FALSE, xlab = "", ylab = "", type = 'l', lty = 6, col = 'blue' )
   		axis( 4, at = pretty(range(se.preds.transfer[,,i])), col = 'blue', col.axis = 'blue' )
-  		mtext( paste( "Standard deviation in the sample [", ifelse( i==2 | i==5, "CHF", "%"), "]", sep = '' ), side = 4, 
+  		mtext( paste( "SD of sample [", ifelse( i==2 | i==5, "CHF", "%"), "]", sep = '' ), side = 4, 
   		       line = 2.5, col= 'blue', cex = par("cex") )
   	}
   }
+  par(fig=c(0,1,0,1), oma=c(0, 0, 0, 0), mar=c(0, 0, 0, 0), new=T)
+  plot(0, 0, type = "n", bty="n", xaxt="n", yaxt="n")
+  title(main = "Aggregate prediction error and variability",line = -2.7)
+  legend(-0.085, 0.3, ncol = 1, cex=1.1, bg = NA, border = NA, pch=c(2,6,4,1,0), title = "k-folds:",
+         legend=c("2 (A)", "2 (B)", "5", "10", "20" ))
   savePlot( paste( "Figures/nrCV_", modelname, "_ModMetrics", sep = '' ), type = "pdf" )
 
 # A: 2 large sep, V: 2 better mix, X: 5, O: 10, []: 20

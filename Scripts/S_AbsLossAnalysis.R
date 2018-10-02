@@ -419,7 +419,6 @@ fitted.mle.seq.Loss <- c( cbind( 1, xlam.seq.Loss ) %*% mle.Loss$beta.hat )
   
 # Conditional mean on original scale, estimator by Taylor 1986
   condmean.seq.Loss <- condmean.orig( theta = par.Loss, x = cbind(1,xlam.seq.Loss), sep.lam = sep.lam.global )
-  # use sigma2 or s2 here???
   var.condmean.Loss <- sapply( xlam.seq.Loss, function(x){
     c( grad.condmean.orig( theta = par.Loss, x = c(1,x), sep.lam = sep.lam.global ) %*% covML.Loss %*% 
          grad.condmean.orig( theta = par.Loss, x = c(1,x), sep.lam = sep.lam.global ) ) } )

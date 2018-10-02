@@ -528,18 +528,21 @@ fitted.mle.seq.DoL <- c( cbind( 1, xlam.seq.DoL ) %*% mle.DoL$beta.hat )
   
 # Sensitivity to removed data points
   # lambda transforming to a symmetric distribution (p.135 Carroll and Ruppert 1984a)
-  plot( seq(-2,2,0.02), sapply( seq(-2,2,0.02), T.skew, x = x.DoL, y = y.DoL, intercept = TRUE ), type = 'l', xlab = "lambda", ylab = "Skewness measure", main = "Relative loss" )
+  plot( seq(-2,2,0.02), sapply( seq(-2,2,0.02), T.skew, x = x.DoL, y = y.DoL, intercept = TRUE ), type = 'l', 
+        xlab = "lambda", ylab = "Skewness measure", main = "Relative loss" )
   abline( h = 0, col = 'red' )
   uniroot( f = T.skew, interval = c(-2,2), x = x.DoL, y = y.DoL, intercept = TRUE )
   # robust: lambda_sk = 0.344, w/o outlier 0.339
 
-  plot( seq(-2,2,0.02), sapply( seq(-2,2,0.02), T.skew, x = x.DoL, y = y.DoL, intercept = TRUE, robust = FALSE ), type = 'l', xlab = "lambda", ylab = "Skewness measure", main = "Relative loss" )
+  plot( seq(-2,2,0.02), sapply( seq(-2,2,0.02), T.skew, x = x.DoL, y = y.DoL, intercept = TRUE, robust = FALSE ), 
+        type = 'l', xlab = "lambda", ylab = "Skewness measure", main = "Relative loss" )
   abline( h = 0, col = 'red' )
   uniroot( f = T.skew, interval = c(-2,2), x = x.DoL, y = y.DoL, intercept = TRUE, robust = FALSE )
   # less robust: lambda_sk = 0.179
 
 # lambda transforming to a homoskedastic distribution (p.135 Carroll and Ruppert 1984a)
-  plot( seq(-2,2,0.02), sapply( seq(-2,2,0.02), H.hesk, x = x.DoL, y = y.DoL, intercept = TRUE ), type = 'l', xlab = "lambda", ylab = "Heteroscedasticity measure", main = "Relative loss" )
+  plot( seq(-2,2,0.02), sapply( seq(-2,2,0.02), H.hesk, x = x.DoL, y = y.DoL, intercept = TRUE ), type = 'l', 
+        xlab = "lambda", ylab = "Heteroscedasticity measure", main = "Relative loss" )
   abline( h = 0, col = 'red' )
   uniroot( f = H.hesk, interval = c(-1,1), x = x.DoL, y = y.DoL, intercept = TRUE )
 # robust: lambda_hesk = 0.136, w/o outlier 0.130

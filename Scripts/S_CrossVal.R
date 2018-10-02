@@ -397,7 +397,6 @@ pbias.models.comb.transf <- function( x, mle, mle.seplam, mle.other, y, type ) {
 ##============ Summary plots ============##
 ##=======================================##
 
-library(abind)
 # BIAS:
   se.bias <- cbind( mod = apply( cbind( pred.mod.Loss[,1:3], pred.mod.DoL[,1:3], pred.mod.Loss[,4:6], pred.mod.DoL[,4:6] ) 
                                  - y.Loss, 2, sd ), 
@@ -440,34 +439,46 @@ library(abind)
 
 
 # Summary plots for prediction on original scale:
-  x11(width = 12, height = 9)
-  par( mfrow = c(2,2), mar = c( 9.5, 4, 3.5, 4 ), cex.axis=0.9)
+  x11(width = 9, height = 9)
+  par( mfrow = c(2,2), cex.axis=0.9, mar= c( 7, 4, 5.5, 4))
   for( i in c(2,4,5,7) ) {
-  	plot( 1:12, c( Delta.CV.Loss[1:3,i], Delta.CV.DoL[1:3,i], 
-  	                                                                  Delta.CV.Loss[4:6,i], Delta.CV.DoL[4:6,i]
-  	                                                                  #, 
-  	                                                                  # Delta.B.Loss[1:3,i], Delta.B.DoL[1:3,i], 
-  	                                                                  # Delta.B.Loss[4:6,i], Delta.B.DoL[4:6,i], 
-  	                                                                  # Delta.632.Loss[1:3,i], Delta.632.DoL[1:3,i], 
-  	                                                                  # Delta.632.Loss[4:6,i], Delta.632.DoL[4:6,i], 
-  	                                                                  # Delta.app.Loss[1:3,i], Delta.app.DoL[1:3,i], 
-  	                                                                  # Delta.app.Loss[4:6,i], Delta.app.DoL[4:6,i] 
-  	                                                                  ), 
-  	      xlab = "", ylab = err.name[i], main = "Aggregate prediction error and variability", 
-  	      pch = rep( c(4,1,0,6), each = 12 ), xaxt = 'n', mgp = c(2.5,1,0) )
-    axis( 1, at = 1:12, labels = c( rownames(Delta.CV.Loss)[1:3], rownames(Delta.CV.DoL)[1:3], rownames(Delta.CV.Loss)[4:6],
-                                    rownames(Delta.CV.DoL)[4:6] ), las = 2 )
+    if(i == 5){par(mar = c(8.5, 4, 3, 4))}
+    ylim <- range(c( Delta.CV.Loss[1:6,i], Delta.CV.DoL[1:6,i]))
+  	plot( 1:6, c( Delta.CV.Loss[1:3,i], Delta.CV.DoL[1:3,i]
+                  #Delta.CV.Loss[4:6,i], Delta.CV.DoL[4:6,i]
+                   #, 
+                   # Delta.B.Loss[1:3,i], Delta.B.DoL[1:3,i], 
+                   # Delta.B.Loss[4:6,i], Delta.B.DoL[4:6,i], 
+                   # Delta.632.Loss[1:3,i], Delta.632.DoL[1:3,i], 
+                   # Delta.632.Loss[4:6,i], Delta.632.DoL[4:6,i], 
+                   # Delta.app.Loss[1:3,i], Delta.app.DoL[1:3,i], 
+                   # Delta.app.Loss[4:6,i], Delta.app.DoL[4:6,i] 
+                   ), 
+  	      xlab = "", ylab = err.name[i], ylim = ylim,
+  	      pch = 1, xaxt = 'n', mgp = c(2.5,1,0) 
+    )
+  	if ( i==2 ) { title( main = "i)", line = 0.5) } else if (i==4) {title( main = "ii)", line = 0.5 )} else if (i==5){ 
+  	  title( main = "iii)", line = 0.5 ) } else { title( main = "iv)", line = 0.5 )}
+  	
+    points(1:6, c(Delta.CV.Loss[4:6,i], Delta.CV.DoL[4:6,i]), pch=3)
+    axis( 1, at = 1:6, labels = c( "Loss.TBS", "Loss.PTBS", "Loss.PTBS.seplam", "DoL.TBS", "DoL.PTBS", "DoL.PTBS.seplam"), las = 2 )
   	abline( h = 0, col = 'red' )
   	abline( v = seq(0.5,12.5,1), lty = 3 )
-  	if(i!=1) {
-  		par(new = TRUE,  cex.axis=0.9, mar = c( 9.5, 4, 3.5, 4 ))
-  		plot( 1:12, se.preds[, 'CV' , i], axes = FALSE, xlab = "", pch = 18,
-  		      ylab = "", type = 'b', lty = 6, col = 'blue' )
-  		axis( 4, at = pretty(range(se.preds[, , i])), col = 'blue', col.axis = 'blue' )
-  		mtext( paste( "Standard deviation in the sample [", ifelse( i==2 | i==5, "CHF", "%"), "]", sep = '' ), side = 4, 
-  		       line = 2.5, col= 'blue', cex = par("cex") )
-  	}
+  	
+  	# standard deviation:
+		par(new = TRUE)
+		ylim <- range(se.preds[, 'CV' , i])
+		plot( 1:6, se.preds[1:6, 'CV' , i], axes = FALSE, xlab = "", pch = 1,
+		      ylab = "", type = 'b', lty = 6, col = 'blue', ylim = ylim, cex=0.5)
+		axis( 4, at = pretty(range(se.preds[, , i])), col = 'blue', col.axis = 'blue' )
+		lines(1:6, se.preds[7:12, 'CV' , i], lty=6, col="blue", type="b", pch = 3, cex=0.5)
+		mtext( paste( "SD of sample [", ifelse( i==2 | i==5, "CHF", "%"), "]", sep = '' ), side = 4, 
+		       line = 2.5, col= 'blue', cex = par("cex") )
   }
+  par(fig=c(0,1,0,1), oma=c(0, 0, 0, 0), mar=c(0, 0, 0, 0), new=T)
+  plot(0, 0, type = "n", bty="n", xaxt="n", yaxt="n")
+  title(main = "Aggregate prediction error and variability",line = -2.7)
+  legend(-0.125, 0.1, ncol = 1, cex=1.2, bg = NA, border = NA, legend=c("Median", "Mean"), pch=c(1, 3))
   savePlot( paste( "Figures/CV_", modelname, "_ModMetrics", sep = '' ), type = "pdf" )
   
 
@@ -524,7 +535,7 @@ library(abind)
 
 
 # TBS Loss mean  (best in terms of bias for Loss, has smallest mean bias but larger se than other models) [#7 overall]
-  pdf(file = paste( "Figures/CV_", modelname, "_bestperformers.pdf", sep = '' ))
+  # pdf(file = paste( "Figures/CV_", modelname, "_bestperformers.pdf", sep = '' ))
   par( mfrow = c(2,2), mar = c(4,4,1,1), oma = c(0,0,2,0) )
   plot( 1:n.obs, (pred.fullCV.Loss[,4]-y.Loss)[ranking], xlab = "Rank of target loss", ylab = "Bias [CHF]", 
         mgp = c(2.5,0.8,0), pch = 20, cex = 0.8 )
@@ -544,6 +555,7 @@ library(abind)
 
 # PTBS DoL mean (overall best in terms of bias when accounting also for se, best in terms of RMSPE, 
 #   co-best in terms of absolute error) [#11 overall]
+  pdf(file = paste( "Figures/CV_", modelname, "_SingleCases.pdf", sep = '' ))
   par( mfrow = c(2,2), mar = c(4,4,1,1), oma = c(0,0,2,0) )
   plot( 1:n.obs, (pred.fullCV.DoL[,5]-y.DoL*y.InSum)[ranking], xlab = "Rank of target loss", ylab = "Bias [CHF]", 
         mgp = c(2.5,0.8,0), pch = 20, cex = 0.8 )
@@ -560,7 +572,7 @@ library(abind)
   abline( h = 0, col = 'blue' )
   abline( h = 100, col = 'blue', lty = 2 )
   title( main = "PTBS model for relative loss, mean prediction - best in RMSPE", outer = TRUE, line = 0.8 )
-
+  dev.off()
   
   
 # PTBS DoL median (overall best in terms of absolute error, practically together with PTBS DoL mean) [#5 overall]
@@ -637,7 +649,7 @@ library(abind)
   abline( h = 0, col = 'blue' )
   abline( h = 100, col = 'blue', lty = 2 )
   title( main = "TBS model for relative loss, median prediction - best in terms of overall ranks", outer = TRUE, line = 0.8 )
-dev.off()
+# dev.off()
 
 # Boxplots
   x11(width = 11, height = 9)

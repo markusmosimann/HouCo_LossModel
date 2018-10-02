@@ -576,7 +576,6 @@ SS.STP.m( list( 1, 4 ), mu.i.hat.srt, n.i.srt ) # VS-TI: no
 
 1 - pf( SS.STP.m( list( 1:3, 4:5 ), mu.i.hat.srt, n.i.srt ), df1 = 4, df2 = canton.intcpt.DoL$n - 1 - 2 )
 
-library(partitions)
 test.SSm.partitions.r <- sapply( apply( setparts(5), 2, function(setidx){ lapply( 1:max(setidx), function(i){
   which(setidx == i) } ) } ), function(grl){ SS.STP.m( grl, mu.i.hat.srt, n.i.srt ) } )
 # Critical values with adapted error sum in denominator:
@@ -745,7 +744,6 @@ cbind( pairdiff.mat %*% my.lm( canton.no.DoL$e, Region.mat.aov )$coefs, diffs.in
     # Last two (UR and VS) slightly questionable but not terribly bad.
   
   # F_max test for equal variances
-  library(SuppDists)
   1 - pmaxFratio( max(tapply( canton.no.DoL$e, region.aov, var ))/min(tapply( canton.no.DoL$e, region.aov, var )), 
                   df = 18, k = 5 ) # S&R suggest to use lesser df
   # Not significant (with larger df = 76 it would however, and with mean df 47 as well)!
@@ -771,7 +769,6 @@ cbind( pairdiff.mat %*% my.lm( canton.no.DoL$e, Region.mat.aov )$coefs, diffs.in
   sort(tapply( rank(canton.no.DoL$e), region.aov, mean ))
   # VS-TI, VS-OW, and SZ-OW seem to be significant -- but no adjustment for multiple comparisons, thus actually they 
   #   might not be significant!!
-  library(dunn.test)
   dunn.test( canton.no.DoL$e, g = region.aov, altp = TRUE, method = "none" )
   dunn.test( canton.no.DoL$e, g = region.aov, altp = TRUE, method = "by"  ) # with any adjustment method, nothing is significant anymore...
 
