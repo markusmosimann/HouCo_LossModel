@@ -592,7 +592,7 @@ se.preds.transfer <- abind( se.rmspe = matrix( NA, 12, nb.K ), se.bias = se.bias
   		plot( rep( 1:12, each = 6 ) + rep( c(-0.36,-0.18,0,0.18,0.36,NA), 12 ), c( t(cbind(se.preds.transfer[,,i],NA)) ),
   		      axes = FALSE, xlab = "", ylab = "", type = 'l', lty = 6, col = 'blue' )
   		axis( 4, at = pretty(range(se.preds.transfer[,,i])), col = 'blue', col.axis = 'blue' )
-  		mtext( paste( "SD of sample [", ifelse( i==2 | i==5, "CHF", "%"), "]", sep = '' ), side = 4, 
+  		mtext( paste( "SD pred. errors [", ifelse( i==2 | i==5, "CHF", "%"), "]", sep = '' ), side = 4, 
   		       line = 2.5, col= 'blue', cex = par("cex") )
   	}
   }

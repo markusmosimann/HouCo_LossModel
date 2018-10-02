@@ -472,7 +472,7 @@ pbias.models.comb.transf <- function( x, mle, mle.seplam, mle.other, y, type ) {
 		      ylab = "", type = 'b', lty = 6, col = 'blue', ylim = ylim, cex=0.5)
 		axis( 4, at = pretty(range(se.preds[, , i])), col = 'blue', col.axis = 'blue' )
 		lines(1:6, se.preds[7:12, 'CV' , i], lty=6, col="blue", type="b", pch = 3, cex=0.5)
-		mtext( paste( "SD of sample [", ifelse( i==2 | i==5, "CHF", "%"), "]", sep = '' ), side = 4, 
+		mtext( paste( "SD of individual prediction errors [", ifelse( i==2 | i==5, "CHF", "%"), "]", sep = '' ), side = 4, 
 		       line = 2.5, col= 'blue', cex = par("cex") )
   }
   par(fig=c(0,1,0,1), oma=c(0, 0, 0, 0), mar=c(0, 0, 0, 0), new=T)
