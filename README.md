@@ -5,7 +5,7 @@ R-Scripts for the development of models predicting flood losses or vulnerabiliti
 
 ## Prerequisites
 
-As mentioned, this code is based on R-Script. Checkout * [https://www.r-project.org/](https://www.r-project.org/) for more information and to download and install the software. 
+As mentioned, this code is based on R-Script. Checkout [https://www.r-project.org/](https://www.r-project.org/) for more information and to download and install the software. 
 
 ## Structure
 
@@ -26,7 +26,10 @@ Mobiliar Lab for Natural Risks, University of Bern, Hallerstrasse 12, CH-3012 Be
 Oeschger Centre for Climate Change Research, University of Bern, Falkenplatz 16, CH-3012 Bern, Switzerland
 
 
-
 ## Acknowledgments
 The authors thank Swiss Mobiliar Insurance Company for providing the data and especially Luzius Thomi and Rouven Sturny for advice on the interpretation of the data
+
+## License
+[Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/)
+
 
